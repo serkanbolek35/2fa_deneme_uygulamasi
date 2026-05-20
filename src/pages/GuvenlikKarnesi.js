@@ -89,12 +89,12 @@ export default function GuvenlikKarnesi() {
         {goster && skor !== null && (
           <div style={{ animation:"fadeUp .5s ease" }}>
             {/* Skor */}
-            <div style={{ background:"rgba(255,255,255,0.04)", border:`2px solid ${seviyeRenk[seviye!]}44`, borderRadius:"20px", padding:"2rem", textAlign:"center", marginBottom:"1.25rem", boxShadow:`0 0 30px ${seviyeRenk[seviye!]}22` }}>
-              <div style={{ fontSize:"3rem", marginBottom:"0.5rem" }}>{seviyeEmoji[seviye!]}</div>
-              <div style={{ color:seviyeRenk[seviye!], fontSize:"1.8rem", fontWeight:"800", marginBottom:"0.25rem" }}>{seviye}</div>
+            <div style={{ background:"rgba(255,255,255,0.04)", border:`2px solid ${seviyeRenk[seviye]}44`, borderRadius:"20px", padding:"2rem", textAlign:"center", marginBottom:"1.25rem", boxShadow:`0 0 30px ${seviyeRenk[seviye]}22` }}>
+              <div style={{ fontSize:"3rem", marginBottom:"0.5rem" }}>{seviyeEmoji[seviye]}</div>
+              <div style={{ color:seviyeRenk[seviye], fontSize:"1.8rem", fontWeight:"800", marginBottom:"0.25rem" }}>{seviye}</div>
               <div style={{ color:"#94a3b8", fontSize:"0.85rem", marginBottom:"1rem" }}>Güvenlik Skoru</div>
               <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:"999px", height:"16px", overflow:"hidden", marginBottom:"0.5rem" }}>
-                <div style={{ height:"100%", borderRadius:"999px", background:seviyeRenk[seviye!], width:`${skor}%`, transition:"width 1s ease", boxShadow:`0 0 12px ${seviyeRenk[seviye!]}80` }} />
+                <div style={{ height:"100%", borderRadius:"999px", background:seviyeRenk[seviye], width:`${skor}%`, transition:"width 1s ease", boxShadow:`0 0 12px ${seviyeRenk[seviye]}80` }} />
               </div>
               <div style={{ color:"#e2e8f0", fontWeight:"800", fontSize:"1.5rem" }}>{skor} / 100</div>
             </div>
@@ -113,7 +113,7 @@ export default function GuvenlikKarnesi() {
             </div>
 
             {/* Öneri mesajı */}
-            <div style={{ background:`${seviyeRenk[seviye!]}11`, border:`1px solid ${seviyeRenk[seviye!]}33`, borderRadius:"14px", padding:"1rem 1.25rem", marginBottom:"1.25rem" }}>
+            <div style={{ background:`${seviyeRenk[seviye]}11`, border:`1px solid ${seviyeRenk[seviye]}33`, borderRadius:"14px", padding:"1rem 1.25rem", marginBottom:"1.25rem" }}>
               <p style={{ color:"#cbd5e1", fontSize:"0.88rem", lineHeight:"1.7", margin:0 }}>
                 {seviye==="Güvenli" && "Harika! Dijital güvenlik alışkanlıkların çok iyi. 2FA kullanmaya ve farklı şifreler oluşturmaya devam et."}
                 {seviye==="Riskli" && "Bazı güvenlik alışkanlıkların iyileştirilebilir. 2FA aktif etmek ve farklı şifreler kullanmak güvenliğini önemli ölçüde artırır."}

@@ -3,10 +3,31 @@ import Navbar from "../components/Navbar";
 
 export default function SifreOlcer() {
   const [sifre, setSifre] = useState("");
+  const [email, setEmail] = useState("");
   const [skor, setSkor] = useState(0);
+  const [kisiselUyari, setKisiselUyari] = useState(false);
   const [kriterler, setKriterler] = useState({
     uzunluk: false, buyukHarf: false, kucukHarf: false, rakam: false, ozelKarakter: false,
   });
+
+  // E-postadan kişisel parçaları çıkar (kullanıcı adı, isim kelimeleri, domain adı)
+  const kisiselParcalariCikar = (emailStr) => {
+    const parcalar = [];
+    if (!emailStr) return parcalar;
+    const lower = emailStr.toLowerCase();
+    // kullanıcı adının tamamı
+    const atIdx = lower.indexOf("@");
+    if (atIdx > 0) {
+      const kullanici = lower.slice(0, atIdx); // örn: "serkanbolek"
+      parcalar.push(kullanici);
+      // nokta/tire/alt çizgiyle ayrılmış kelimeler (örn: "serkan", "bolek")
+      kullanici.split(/[.\-_0-9]/).filter(p => p.length >= 3).forEach(p => parcalar.push(p));
+      // domain adı (gmail, yahoo, hotmail...)
+      const domain = lower.slice(atIdx + 1).split(".")[0];
+      if (domain.length >= 3) parcalar.push(domain);
+    }
+    return parcalar.filter(p => p.length >= 3);
+  };
 
   useEffect(() => {
     const yeni = {
@@ -17,13 +38,26 @@ export default function SifreOlcer() {
       ozelKarakter: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(sifre),
     };
     setKriterler(yeni);
-    setSkor(Object.values(yeni).filter(Boolean).length * 20);
-  }, [sifre]);
+
+    // Kişisel bilgi kontrolü
+    const sifreLower = sifre.toLowerCase();
+    const parcalar = kisiselParcalariCikar(email);
+    const kisiselIceriyor = parcalar.some(p => sifreLower.includes(p));
+    setKisiselUyari(kisiselIceriyor && sifre.length > 0);
+
+    // Kişisel bilgi varsa skor düşürülür (100 yerine max 60)
+    const temelSkor = Object.values(yeni).filter(Boolean).length * 20;
+    setSkor(kisiselIceriyor ? Math.min(temelSkor, 60) : temelSkor);
+  }, [sifre, email]);
 
   const skorRengi = () => skor <= 39 ? "#ef4444" : skor <= 79 ? "#f59e0b" : "#22c55e";
-  const skorEtiketi = () => skor === 0 ? "" : skor <= 39 ? "Zayif" : skor <= 79 ? "Orta" : "Guclu";
-  const skorEmoji = () => skor === 0 ? "🔒" : skor <= 39 ? "😟" : skor <= 79 ? "🤔" : "😎";
-  const tamam = skor === 100;
+  const skorEtiketi = () => {
+    if (skor === 0) return "";
+    if (kisiselUyari) return "Zayif";
+    return skor <= 39 ? "Zayif" : skor <= 79 ? "Orta" : "Guclu";
+  };
+  const skorEmoji = () => skor === 0 ? "🔒" : (kisiselUyari || skor <= 39) ? "😟" : skor <= 79 ? "🤔" : "😎";
+  const tamam = skor === 100 && !kisiselUyari;
 
   const kriterListesi = [
     { key: "uzunluk",      metin: "En az 8 karakter" },
@@ -47,10 +81,19 @@ export default function SifreOlcer() {
             <h1 style={{ margin:0,fontSize:"1.8rem",fontWeight:"800",background:"linear-gradient(90deg,#a78bfa,#60a5fa)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent" }}>Canli Sifre Gucu Olcer</h1>
             <p style={{ color:"#94a3b8",fontSize:"0.9rem",marginTop:"0.4rem" }}>Guclu bir sifre olusturarak siber saldirilara karsi korun!</p>
           </div>
-          <div style={{ display:"flex",alignItems:"center",gap:"0.75rem",marginBottom:"1rem" }}>
-            <input className="so-input" style={{ flex:1,background:"rgba(255,255,255,0.08)",border:"2px solid rgba(255,255,255,0.15)",borderRadius:"16px",padding:"1rem 1.25rem",color:"#fff",fontSize:"1.2rem",fontFamily:"monospace",outline:"none",transition:"border-color .2s" }} type="text" placeholder="Sifreni buraya yaz..." value={sifre} onChange={(e) => setSifre(e.target.value)} spellCheck={false} autoComplete="off" />
-            <span style={{ fontSize:"2rem",minWidth:"48px",textAlign:"center",transition:"transform 0.3s",transform:tamam?"scale(1.3)":"scale(1)" }}>{skorEmoji()}</span>
+          <div style={{ marginBottom:"1rem" }}>
+            <input className="so-input" style={{ width:"100%",boxSizing:"border-box",background:"rgba(255,255,255,0.06)",border:"2px solid rgba(255,255,255,0.12)",borderRadius:"14px",padding:"0.8rem 1.1rem",color:"#fff",fontSize:"0.95rem",fontFamily:"'Sora',sans-serif",outline:"none",transition:"border-color .2s",marginBottom:"0.75rem" }} type="email" placeholder="E-posta adresin (isteğe bağlı, kişisel bilgi kontrolü için)" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="off" />
+            <div style={{ display:"flex",alignItems:"center",gap:"0.75rem" }}>
+              <input className="so-input" style={{ flex:1,background:"rgba(255,255,255,0.08)",border:"2px solid rgba(255,255,255,0.15)",borderRadius:"16px",padding:"1rem 1.25rem",color:"#fff",fontSize:"1.2rem",fontFamily:"monospace",outline:"none",transition:"border-color .2s" }} type="text" placeholder="Sifreni buraya yaz..." value={sifre} onChange={(e) => setSifre(e.target.value)} spellCheck={false} autoComplete="off" />
+              <span style={{ fontSize:"2rem",minWidth:"48px",textAlign:"center",transition:"transform 0.3s",transform:tamam?"scale(1.3)":"scale(1)" }}>{skorEmoji()}</span>
+            </div>
           </div>
+          {kisiselUyari && (
+            <div style={{ background:"rgba(239,68,68,0.12)",border:"1px solid rgba(239,68,68,0.4)",borderRadius:"12px",padding:"0.75rem 1rem",marginBottom:"0.75rem",display:"flex",alignItems:"center",gap:"0.6rem" }}>
+              <span style={{ fontSize:"1.2rem" }}>⚠️</span>
+              <span style={{ color:"#fca5a5",fontSize:"0.85rem",fontWeight:"600" }}>Şifren e-posta adresindeki kişisel bilgileri içeriyor! Bu şifreler kolayca tahmin edilebilir.</span>
+            </div>
+          )}
           <div style={{ marginBottom:"0.5rem" }}>
             <div style={{ display:"flex",justifyContent:"space-between",marginBottom:"0.4rem" }}>
               <span style={{ color:skorRengi(),fontWeight:"700",transition:"color .3s" }}>{skorEtiketi()}</span>
