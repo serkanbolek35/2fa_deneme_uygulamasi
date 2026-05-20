@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import * as OTPAuth from "otpauth";
@@ -31,11 +32,6 @@ export default function Dashboard() {
     }
     check2FA();
   }, [currentUser]);
-
-  async function handleLogout() {
-    await logout();
-    navigate("/login");
-  }
 
   async function setup2FA() {
     const totp = new OTPAuth.TOTP({
@@ -89,10 +85,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <nav className="dashboard-nav">
-        <div className="nav-logo">MyApp</div>
-        <button className="logout-btn" onClick={handleLogout}>Cikis Yap</button>
-      </nav>
+      <Navbar />
 
       <div className="dashboard-content">
         <div className="welcome-card">

@@ -4,6 +4,9 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import SifreOlcer from "./pages/SifreOlcer";
+import PhishingDedektifi from "./pages/PhishingDedektifi";
+import DominoSimulator from "./pages/DominoSimulator";
 import "./App.css";
 
 function PrivateRoute({ children }) {
@@ -15,9 +18,7 @@ function PrivateRoute({ children }) {
 
 function PublicRoute({ children }) {
   const { currentUser, awaitingTwoFA } = useAuth();
-  // Kullanıcı giriş yapmış VE 2FA beklemiyor → dashboard'a gönder
   if (currentUser && !awaitingTwoFA) return <Navigate to="/dashboard" />;
-  // Diğer tüm durumlar (giriş yok, veya 2FA bekleniyor) → login'de kal
   return children;
 }
 
@@ -27,9 +28,13 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          {/* Giriş yapılması gereken sayfalar */}
+          <Route path="/dashboard"   element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/sifre-olcer" element={<PrivateRoute><SifreOlcer /></PrivateRoute>} />
+          <Route path="/phishing"    element={<PrivateRoute><PhishingDedektifi /></PrivateRoute>} />
+          <Route path="/domino"      element={<PrivateRoute><DominoSimulator /></PrivateRoute>} />
         </Routes>
       </Router>
     </AuthProvider>
